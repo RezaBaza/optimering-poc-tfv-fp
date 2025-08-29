@@ -13,6 +13,43 @@ Detta verktyg hjälper till att fördela provkapacitet för att jämna ut vänte
 Börja med att mata in nuvarande data för de orter som ska ingå i gruppen.
 """)
 
+# === NY DEL: FÖRKLARING AV MODELLEN ===
+
+with st.expander("Klicka här för att läsa om modellen och dess för- och nackdelar"):
+    st.subheader("Hur fungerar optimeringen?")
+    st.markdown("""
+    Tänk dig att du har en kanna med vatten (**total kapacitet**) som ska fördelas mellan flera törstiga plantor (**orter**). Vissa är väldigt torra (**lång väntetid**) och andra är nästan nöjda.
+
+    Modellen använder en matematisk metod som kallas **Linjär Optimering** för att hitta det absolut bästa sättet att fördela vattnet så att alla plantor blir **så lika nöjda som möjligt** (får en så jämn väntetid som möjligt). Den gör detta genom att följa tre principer:
+
+    1.  **Mål:** Minimera den totala "ojämlikheten" i väntetid mellan orterna.
+    2.  **Beslut:** Bestämma det exakta antalet prov (`x`) som varje ort ska tilldelas.
+    3.  **Regler:** Aldrig överskrida den totala kapaciteten för gruppen.
+
+    Resultatet är inte en "bra gissning", utan den matematiskt bevisat bästa lösningen givet indatan.
+    """)
+
+    st.subheader("Fördelar vs. Nackdelar & Begränsningar")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.success("Fördelar 👍")
+        st.markdown("""
+        *   **Optimal & Rättvis:** Hittar den matematiskt bästa och mest rättvisa fördelningen.
+        *   **Datadriven:** Besluten baseras på verklig data, inte magkänsla.
+        *   **Snabb & Skalbar:** Kan lösa problemet lika enkelt för 3 orter som för 300.
+        *   **Transparent:** Reglerna är tydliga och resultatet är spårbart.
+        """)
+
+    with col2:
+        st.warning("Nackdelar & Begränsningar ⚠️")
+        st.markdown("""
+        *   **"Skräp in, skräp ut":** Resultatet är helt beroende av att indatan (väntetider, kapacitet) är korrekt.
+        *   **Förenklad världsbild:** Modellen känner inte till lokala förutsättningar (sjukdom, semester, vägarbeten) om vi inte matar in dem som nya regler.
+        *   **Fokuserar på ett enda mål:** Just nu är målet *endast* att jämna ut väntetider. Den tar inte hänsyn till t.ex. resekostnader för personal eller andra affärsmål.
+        """)
+
+
 # --- DEL 2: INDATA-SEKTION ---
 if 'orter_data' not in st.session_state:
     st.session_state.orter_data = []
