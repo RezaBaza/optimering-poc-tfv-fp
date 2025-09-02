@@ -7,7 +7,7 @@ import math
 
 # --- Sidans Konfiguration och Titel ---
 st.set_page_config(layout="wide", page_title="Optimeringsmotor för Körprov")
-st.title("PoC: Optimeringsmotor för Körprovsplanering")
+st.title("PoC (Proof of Concept): Optimeringsmotor för Körprovsplanering")
 
 st.markdown("""
 Detta verktyg innehåller **två olika analysmetoder** för att planera körprovskapacitet:
