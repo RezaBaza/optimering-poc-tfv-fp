@@ -34,7 +34,7 @@ with st.expander("Grundläggande principer: Fördelar, Nackdelar & Vad är en 'S
         st.warning("Nackdelar & Begränsningar ⚠️")
         st.markdown("""
         *   **"Skräp in, skräp ut":** Resultatet är helt beroende av att indatan är korrekt.
-        *   **Förenklad världsbild:** Modellen känner inte till lokala förutsättningar (sjukdom, semester, etc.) om vi inte matar in dem som nya regler.
+        *   **Förenklad världsbild:** Modellen känner inte till lokala förutsättningar (realtidsdata, kostnader, sjukdom, semester, etc.) om vi inte matar in dem som nya regler.
         *   **Fokuserar på ett enda mål:** Varje verktyg är designat för ett specifikt syfte.
         """)
     
@@ -132,6 +132,7 @@ if st.session_state.orter_data:
         with st.expander("Metodförklaring: Optimering"):
             st.markdown("""
             **Syfte:** Att fördela en fast, total kapacitet mellan orterna för att göra väntetiderna så lika som möjligt.
+           
             **Metod:** Vi använder en matematisk optimeringsmodell för att lösa detta. Modellen letar efter den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.
             """)
             st.latex(r'''\min \sum_{i=1}^{N} |K_i - \bar{W} \cdot x_i| \quad \text{under bivillkoret} \quad \sum_{i=1}^{N} x_i = C_{\text{total}}''')
@@ -171,6 +172,7 @@ if st.session_state.orter_data:
         with st.expander("Metodförklaring: Behovsberäkning"):
             st.markdown("""
             **Syfte:** Att beräkna exakt hur många prov varje ort måste erbjuda per vecka för att nå en specifik målvärde-väntetid.
+            
             **Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.
             """)
             st.latex(r''' \text{Nödvändig Kapacitet} (x_i) = \lceil \frac{\text{Kötryck} (K_i)}{\text{Målvärde Väntetid} (T)} \rceil ''')
