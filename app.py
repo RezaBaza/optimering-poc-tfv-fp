@@ -1,4 +1,4 @@
-# app.py - VERSION 3.6 MED FÖRKLARING AV VARIABLER
+# app.py - VERSION 3.7 MED KORRIGERAD TEXT OCH "NÄSTA STEG"-EXPANDER
 
 import streamlit as st
 import pandas as pd
@@ -108,8 +108,6 @@ if st.session_state.orter_data:
             st.markdown("**Syfte:** Att fördela en fast, total kapacitet mellan orterna för att göra väntetiderna så lika som möjligt.")
             st.markdown("**Metod:** Vi använder en matematisk optimeringsmodell (Google OR-Tools CP-SAT Solver) för att hitta den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.")
             st.latex(r'''\min \sum_{i=1}^{N} |K_i - \bar{W} \cdot x_i| \quad \text{under bivillkoret} \quad \sum_{i=1}^{N} x_i = C_{\text{total}}''')
-            
-            # === NY DEL: FÖRKLARING AV VARIABLER ===
             st.markdown("""**Variabler i formeln:**""")
             st.markdown(r"""
             *   $K_i$: Det beräknade **kötrycket** för ort $i$ (`nuvarande_prov` × `väntetid`).
@@ -117,13 +115,12 @@ if st.session_state.orter_data:
             *   $x_i$: Det **föreslagna antalet prov** för ort $i$ (detta är vad modellen räknar ut).
             *   $C_{\text{total}}$: Den **totala kapaciteten** som angetts för gruppen.
             """)
-            
             st.markdown("---")
             col_pro, col_con = st.columns(2)
             with col_pro:
                 st.success("Fördelar 👍")
                 st.markdown("""
-                *   **Optimal resursanvändning:** Gör absolut det bästa av de resurser man redan har.
+                *   **Maximal nytta av given kapacitet:** Gör absolut det bästa av den totala provkapacitet man har.
                 *   **Rättvist & Datadrivet:** Skapar en rättvis fördelning baserad på data, inte magkänsla.
                 *   **Praktiskt genomförbart:** Ger en konkret handlingsplan inom ramen för en given budget/kapacitet.
                 """)
@@ -135,13 +132,11 @@ if st.session_state.orter_data:
                 *   **Operationellt krävande:** Kan föreslå stora kapacitetsförflyttningar som kan vara svåra att genomföra.
                 """)
 
-        # Indata för flik 1
         nuvarande_summa_tab1 = sum(ort['nuvarande_prov'] for ort in st.session_state.orter_data)
         total_kapacitet_tab1 = st.number_input(
             f"Ange gruppens totala kapacitet (nuvarande summa är {nuvarande_summa_tab1})",
             min_value=1, value=nuvarande_summa_tab1, key="utjamna_kapacitet_input")
 
-        # Knapp och resultatvisning för flik 1
         if st.button("🚀 Optimera!", type="primary"):
             with st.spinner("Tänker... Optimeringsmotorn arbetar..."):
                 results_df_tab1, w_bar = solve_optimization(st.session_state.orter_data, total_kapacitet_tab1)
@@ -149,6 +144,19 @@ if st.session_state.orter_data:
                 st.success("Optimal fördelning hittad!")
                 st.markdown(f"Målet var att nå en gemensam väntetid på cirka **{w_bar:.2f} veckor**.")
                 st.dataframe(results_df_tab1, use_container_width=True)
+
+                # === NY EXPANDER FÖR NÄSTA STEG ===
+                with st.expander("Nästa Steg: Från PoC till Strategiskt Verktyg"):
+                    st.markdown("""
+                    Detta verktyg är en kraftfull start, men kan utvecklas vidare för att ge ännu mer värdefulla och precisa rekommendationer. Här är en möjlig roadmap:
+                    """)
+                    st.subheader("1. Inför en Efterfrågeprognos")
+                    st.markdown("**Varför?** För att skapa en **hållbar plan** som förhindrar att nya köer byggs upp. Modellen blir proaktiv istället för reaktiv. Detta görs genom att lägga till en variabel för `prognos_per_vecka`.")
+                    st.subheader("2. Sätt Realistiska Kapacitetsgränser")
+                    st.markdown("**Varför?** För att säkerställa att förslagen är **praktiskt genomförbara** på varje kontor. Detta görs genom att lägga till `min_kapacitet` och `max_kapacitet` som nya regler för varje ort.")
+                    st.subheader("3. Hantera Olika Provtyper & Kostnader")
+                    st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som _"Vad är det billigaste sättet att nå 4 veckors väntetid?"_.")
+                    st.info("**Teknisk not:** För att hantera kostnader skulle vi byta till en **MIP-solver (Mixed-Integer Programming)**, som är industristandard för denna typ av komplexa ekonomiska optimeringsproblem.")
             else:
                 st.error("Kunde inte hitta en lösning. Kontrollera att den totala kapaciteten är tillräcklig.")
 
@@ -160,16 +168,13 @@ if st.session_state.orter_data:
             st.markdown("**Syfte:** Att beräkna exakt hur många prov varje ort måste erbjuda per vecka för att nå en specifik målvärde-väntetid.")
             st.markdown("**Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.")
             st.latex(r''' \text{Nödvändig Kapacitet} (x_i) = \lceil \frac{\text{Kötryck} (K_i)}{\text{Målvärde Väntetid} (T)} \rceil ''')
-            
-            # === NY DEL: FÖRKLARING AV VARIABLER ===
             st.markdown("""**Variabler i formeln:**""")
             st.markdown(r"""
             *   $x_i$: Den **nödvändiga kapaciteten** (antal prov/vecka) för ort $i$.
             *   $K_i$: Det beräknade **kötrycket** för ort $i$.
             *   $T$: Den **önskade målvärde-väntetiden** (t.ex. 5 veckor).
-            *   $\lceil \dots \rceil$: Symboliserar att vi avrundar uppåt till närmaste heltal, eftersom vi inte kan erbjuda ett halvt prov.
+            *   $\lceil \dots \rceil$: Symboliserar att vi avrundar uppåt till närmaste heltal.
             """)
-            
             st.markdown("---")
             col_pro2, col_con2 = st.columns(2)
             with col_pro2:
@@ -187,10 +192,8 @@ if st.session_state.orter_data:
                 *   **Ger inget "hur":** Verktyget säger *vad* som behövs, men inte *hur* man ska uppnå det.
                 """)
 
-        # Indata för flik 2
         target_wait_time = st.number_input("Ange målvärde för väntetid (veckor):", min_value=1.0, value=5.0, step=0.5, key="target_wait_input")
         
-        # Knapp och resultatvisning för flik 2
         if st.button("Beräkna Behov"):
             results_df_tab2, totals = calculate_target_wait(st.session_state.orter_data, target_wait_time)
             st.success("Beräkning slutförd!")
@@ -205,3 +208,16 @@ if st.session_state.orter_data:
                 st.metric(label="Nödvändig total kapacitet", value=f"{totals['needed']:.0f}")
             with col_sum3:
                 st.metric(label="Kapacitetsgap", value=f"{totals['gap']:.0f}", delta=f"{totals['gap']:.0f}")
+            
+            # === NY EXPANDER FÖR NÄSTA STEG (samma som i flik 1) ===
+            with st.expander("Nästa Steg: Från PoC till Strategiskt Verktyg"):
+                st.markdown("""
+                Detta verktyg är en kraftfull start, men kan utvecklas vidare för att ge ännu mer värdefulla och precisa rekommendationer. Här är en möjlig roadmap:
+                """)
+                st.subheader("1. Inför en Efterfrågeprognos")
+                st.markdown("**Varför?** För att skapa en **hållbar plan** som förhindrar att nya köer byggs upp. Modellen blir proaktiv istället för reaktiv. Detta görs genom att lägga till en variabel för `prognos_per_vecka`.")
+                st.subheader("2. Sätt Realistiska Kapacitetsgränser")
+                st.markdown("**Varför?** För att säkerställa att förslagen är **praktiskt genomförbara** på varje kontor. Detta görs genom att lägga till `min_kapacitet` och `max_kapacitet` som nya regler för varje ort.")
+                st.subheader("3. Hantera Olika Provtyper & Kostnader")
+                st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som _"Vad är det billigaste sättet att nå 4 veckors väntetid?"_.")
+                st.info("**Teknisk not:** För att hantera kostnader skulle vi byta till en **MIP-solver (Mixed-Integer Programming)**, som är industristandard för denna typ av komplexa ekonomiska optimeringsproblem.")
