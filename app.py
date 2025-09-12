@@ -1,4 +1,4 @@
-# app.py - VERSION 3.4 MED SLUTGILTIG LOGISK STRUKTUR
+# app.py - VERSION 3.5 MED BALANSERADE FÖR- OCH NACKDELAR
 
 import streamlit as st
 import pandas as pd
@@ -104,17 +104,27 @@ if st.session_state.orter_data:
     with tab1:
         st.subheader("Fördela en given kapacitet så rättvist som möjligt")
         
-        with st.expander("Metodförklaring, fördelar och tekniska detaljer"):
+        with st.expander("Metod, Fördelar och Nackdelar"):
             st.markdown("**Syfte:** Att fördela en fast, total kapacitet mellan orterna för att göra väntetiderna så lika som möjligt.")
             st.markdown("**Metod:** Vi använder en matematisk optimeringsmodell (Google OR-Tools CP-SAT Solver) för att hitta den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.")
             st.latex(r'''\min \sum_{i=1}^{N} |K_i - \bar{W} \cdot x_i| \quad \text{under bivillkoret} \quad \sum_{i=1}^{N} x_i = C_{\text{total}}''')
             
             st.markdown("---")
-            st.markdown("**Fördelar med denna metod:**")
-            st.success("Hittar den matematiskt bevisat optimala och mest rättvisa fördelningen av den givna kapaciteten.")
-            
-            st.markdown("**Tekniska detaljer (Solver):**")
-            st.info("Modellen använder **CP-SAT Solver** från Google OR-Tools. Den är vald för sin exceptionella förmåga att hantera problem med heltalsvariabler (som 'antal prov'), vilket garanterar en robust och pålitlig lösning.")
+            col_pro, col_con = st.columns(2)
+            with col_pro:
+                st.success("Fördelar 👍")
+                st.markdown("""
+                *   **Optimal resursanvändning:** Gör absolut det bästa av de resurser man redan har.
+                *   **Rättvist & Datadrivet:** Skapar en rättvis fördelning baserad på data, inte magkänsla.
+                *   **Praktiskt genomförbart:** Ger en konkret handlingsplan inom ramen för en given budget/kapacitet.
+                """)
+            with col_con:
+                st.warning("Nackdelar ⚠️")
+                st.markdown("""
+                *   **Begränsat av totalen:** Om den totala kapaciteten är för låg kommer verktyget bara att "fördela misären jämnt".
+                *   **Reaktivt:** Löser det nuvarande köproblemet, men tar inte hänsyn till framtida efterfrågan (om inte prognos används som indata).
+                *   **Operationellt krävande:** Kan föreslå stora kapacitetsförflyttningar som kan vara svåra att genomföra i praktiken.
+                """)
 
         # Indata för flik 1
         nuvarande_summa_tab1 = sum(ort['nuvarande_prov'] for ort in st.session_state.orter_data)
@@ -137,14 +147,27 @@ if st.session_state.orter_data:
     with tab2:
         st.subheader("Beräkna vilken kapacitet som krävs för att nå ett mål")
 
-        with st.expander("Metodförklaring och fördelar"):
+        with st.expander("Metod, Fördelar och Nackdelar"):
             st.markdown("**Syfte:** Att beräkna exakt hur många prov varje ort måste erbjuda per vecka för att nå en specifik målvärde-väntetid.")
             st.markdown("**Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.")
             st.latex(r''' \text{Nödvändig Kapacitet} (x_i) = \lceil \frac{\text{Kötryck} (K_i)}{\text{Målvärde Väntetid} (T)} \rceil ''')
             
             st.markdown("---")
-            st.markdown("**Fördelar med denna metod:**")
-            st.success("Ger ett konkret, datadrivet underlag för strategiska beslut genom att tydligt kvantifiera resursbehov och kapacitetsgap.")
+            col_pro2, col_con2 = st.columns(2)
+            with col_pro2:
+                st.success("Fördelar 👍")
+                st.markdown("""
+                *   **Strategiskt beslutsunderlag:** Svarar på frågan "Vad krävs för att nå vårt mål?". Perfekt för budget- och resursplanering.
+                *   **Kvantifierar problem:** Synliggör exakt hur stort ett eventuellt kapacitetsgap är i konkreta siffror.
+                *   **Enkelt & Transparent:** Metoden är mycket enkel att förstå och kommunicera.
+                """)
+            with col_con2:
+                st.warning("Nackdelar ⚠️")
+                st.markdown("""
+                *   **Ignorerar begränsningar:** Resultatet tar inte hänsyn till budget, personal eller andra praktiska begränsningar.
+                *   **Känsligt för målvärdet:** Ett orimligt lågt målvärde (t.ex. 1 vecka) kommer att ge ett orimligt högt kapacitetskrav.
+                *   **Ger inget "hur":** Verktyget säger *vad* som behövs, men inte *hur* man ska uppnå det.
+                """)
 
         # Indata för flik 2
         target_wait_time = st.number_input("Ange målvärde för väntetid (veckor):", min_value=1.0, value=5.0, step=0.5, key="target_wait_input")
