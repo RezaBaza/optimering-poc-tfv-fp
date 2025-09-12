@@ -1,4 +1,4 @@
-# app.py - VERSION 3.3 MED EXTRA TEKNISK DETALJ OM SOLVERN
+# app.py - VERSION 3.4 MED SLUTGILTIG LOGISK STRUKTUR
 
 import streamlit as st
 import pandas as pd
@@ -7,7 +7,7 @@ import math
 
 # --- Sidans Konfiguration och Titel ---
 st.set_page_config(layout="wide", page_title="Optimeringsmotor för Körprov")
-st.title("PoC (Proof of Concept): Optimeringsmotor för Körprovsplanering")
+st.title("PoC: Optimeringsmotor för Körprovsplanering")
 
 st.markdown("""
 Detta verktyg innehåller **två olika analysmetoder** för att planera körprovskapacitet:
@@ -17,31 +17,6 @@ Detta verktyg innehåller **två olika analysmetoder** för att planera körprov
 
 Börja med att mata in nuvarande data för de orter som ska ingå i gruppen nedan.
 """)
-
-# === Allmän information (som förut) ===
-with st.expander("Grundläggande principer: Fördelar, Nackdelar & Vad är en 'Solver'?", expanded=False):
-    st.subheader("Allmänna fördelar vs. Nackdelar & Begränsningar")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.success("Fördelar 👍")
-        st.markdown("""
-        *   **Optimal & Rättvis:** Hittar matematiskt bästa och mest rättvisa fördelningar.
-        *   **Datadriven:** Besluten baseras på verklig data, inte magkänsla.
-        *   **Snabb & Skalbar:** Kan lösa problem lika enkelt för 3 orter som för 300.
-        *   **Transparent:** Reglerna är tydliga och resultatet är spårbart.
-        """)
-    with col2:
-        st.warning("Nackdelar & Begränsningar ⚠️")
-        st.markdown("""
-        *   **"Skräp in, skräp ut":** Resultatet är helt beroende av att indatan är korrekt.
-        *   **Förenklad världsbild:** Modellen känner inte till lokala förutsättningar (realtidsdata, kostnader, sjukdom, semester, etc.) om vi inte matar in dem som nya regler.
-        *   **Fokuserar på ett enda mål:** Varje verktyg är designat för ett specifikt syfte.
-        """)
-    
-    st.subheader("Vad är en 'Solver'?")
-    st.markdown("""
-    En **Solver** är **motorn** som löser det matematiska problemet. I detta verktyg använder vi **Google OR-Tools**. Dess uppgift är att systematiskt och extremt snabbt söka igenom alla möjliga lösningar, kassera de som bryter mot reglerna, och returnera den enda lösning som är bevisat optimal enligt vårt mål.
-    """)
 
 # --- FUNKTIONER (Definitioner först) ---
 
@@ -122,31 +97,24 @@ if st.session_state.orter_data:
         st.rerun()
 
     # --- FLIKAR FÖR DE TVÅ OLIKA VERKTYGEN ---
-    st.header("Steg 2: Välj en Solver (verktyg)")
+    st.header("Steg 2: Välj ett verktyg")
     tab1, tab2 = st.tabs(["📊 Verktyg 1: Utjämna Väntetider", "🎯 Verktyg 2: Målvärdesanalys"])
 
     # --- FLIK 1: UTJÄMNA VÄNTETIDER ---
     with tab1:
         st.subheader("Fördela en given kapacitet så rättvist som möjligt")
         
-        with st.expander("Metodförklaring: Optimering"):
-            st.markdown("""
-            **Syfte:** Att fördela en fast, total kapacitet mellan orterna för att göra väntetiderna så lika som möjligt.
-           
-            **Metod:** Vi använder en matematisk optimeringsmodell för att lösa detta. Modellen letar efter den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.
-            """)
+        with st.expander("Metodförklaring, fördelar och tekniska detaljer"):
+            st.markdown("**Syfte:** Att fördela en fast, total kapacitet mellan orterna för att göra väntetiderna så lika som möjligt.")
+            st.markdown("**Metod:** Vi använder en matematisk optimeringsmodell (Google OR-Tools CP-SAT Solver) för att hitta den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.")
             st.latex(r'''\min \sum_{i=1}^{N} |K_i - \bar{W} \cdot x_i| \quad \text{under bivillkoret} \quad \sum_{i=1}^{N} x_i = C_{\text{total}}''')
-
-        # === NY EXPANDER FÖR TEKNISK DETALJ ===
-        with st.expander("Verktyget bakom: Google OR-Tools (CP-SAT)"):
-            st.markdown("""
-            För att lösa detta optimeringsproblem används **CP-SAT Solver**, en del av Googles open-source-bibliotek **OR-Tools**.
             
-            **Varför CP-SAT?**
-            *   **Heltalshantering:** Den är exceptionellt bra på att hantera problem där svaren måste vara heltal (som `antal prov`), vilket var en avgörande faktor för att göra modellen robust.
-            *   **Flexibilitet:** CP-SAT står för "Constraint Programming - Satisfiability". Det betyder att den är byggd som en motor för att lösa komplexa logiska pussel. Detta gör det enkelt att i framtiden lägga till nya, mer avancerade affärsregler.
-            *   **Prestanda:** Det är en av de snabbaste och mest kraftfulla solvers av sitt slag i världen, vilket garanterar att vi får en optimal lösning på bråkdelen av en sekund.
-            """)
+            st.markdown("---")
+            st.markdown("**Fördelar med denna metod:**")
+            st.success("Hittar den matematiskt bevisat optimala och mest rättvisa fördelningen av den givna kapaciteten.")
+            
+            st.markdown("**Tekniska detaljer (Solver):**")
+            st.info("Modellen använder **CP-SAT Solver** från Google OR-Tools. Den är vald för sin exceptionella förmåga att hantera problem med heltalsvariabler (som 'antal prov'), vilket garanterar en robust och pålitlig lösning.")
 
         # Indata för flik 1
         nuvarande_summa_tab1 = sum(ort['nuvarande_prov'] for ort in st.session_state.orter_data)
@@ -169,14 +137,14 @@ if st.session_state.orter_data:
     with tab2:
         st.subheader("Beräkna vilken kapacitet som krävs för att nå ett mål")
 
-        with st.expander("Metodförklaring: Behovsberäkning"):
-            st.markdown("""
-            **Syfte:** Att beräkna exakt hur många prov varje ort måste erbjuda per vecka för att nå en specifik målvärde-väntetid.
-            
-            **Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.
-            """)
+        with st.expander("Metodförklaring och fördelar"):
+            st.markdown("**Syfte:** Att beräkna exakt hur många prov varje ort måste erbjuda per vecka för att nå en specifik målvärde-väntetid.")
+            st.markdown("**Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.")
             st.latex(r''' \text{Nödvändig Kapacitet} (x_i) = \lceil \frac{\text{Kötryck} (K_i)}{\text{Målvärde Väntetid} (T)} \rceil ''')
-            st.markdown("Resultatet visar det totala behovet och eventuellt kapacitetsgap mot nuläget.")
+            
+            st.markdown("---")
+            st.markdown("**Fördelar med denna metod:**")
+            st.success("Ger ett konkret, datadrivet underlag för strategiska beslut genom att tydligt kvantifiera resursbehov och kapacitetsgap.")
 
         # Indata för flik 2
         target_wait_time = st.number_input("Ange målvärde för väntetid (veckor):", min_value=1.0, value=5.0, step=0.5, key="target_wait_input")
