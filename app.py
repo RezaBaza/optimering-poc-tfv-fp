@@ -208,7 +208,7 @@ if st.session_state.orter_data:
                 st.metric(label="Nödvändig total kapacitet", value=f"{totals['needed']:.0f}")
             with col_sum3:
                 st.metric(label="Kapacitetsgap", value=f"{totals['gap']:.0f}", delta=f"{totals['gap']:.0f}")
-            
+            """
             # === NY EXPANDER FÖR NÄSTA STEG (samma som i flik 1) ===
             with st.expander("Nästa Steg: Från PoC till Strategiskt Verktyg"):
                 st.markdown("""
@@ -221,3 +221,4 @@ if st.session_state.orter_data:
                 st.subheader("3. Hantera Olika Provtyper & Kostnader")
                 st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som 'Vad är det billigaste sättet att nå 4 veckors väntetid?'")
                 st.info("**Teknisk not:** För att hantera kostnader skulle vi byta till en **MIP-solver (Mixed-Integer Programming)**, som är industristandard för denna typ av komplexa ekonomiska optimeringsproblem.")
+                """
