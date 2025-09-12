@@ -1,4 +1,4 @@
-# app.py - VERSION 3.5 MED BALANSERADE FÖR- OCH NACKDELAR (UTAN NÄSTA STEG)
+# app.py - VERSION 3.9 MED ÅTERSTÄLLDA VARIABEL-FÖRKLARINGAR
 
 import streamlit as st
 import pandas as pd
@@ -21,6 +21,7 @@ Börja med att mata in nuvarande data för de orter som ska ingå i gruppen neda
 # --- FUNKTIONER (Definitioner först) ---
 
 def solve_optimization(orter_data, total_kapacitet):
+    # (Inga ändringar i denna funktion)
     for ort in orter_data:
         ort['K'] = ort['nuvarande_prov'] * ort['väntetid']
     total_K = sum(ort['K'] for ort in orter_data)
@@ -55,6 +56,7 @@ def solve_optimization(orter_data, total_kapacitet):
     else: return None, None
 
 def calculate_target_wait(orter_data, target_wait):
+    # (Inga ändringar i denna funktion)
     results = []
     needed_capacity = 0
     current_capacity = sum(ort['nuvarande_prov'] for ort in orter_data)
@@ -107,12 +109,20 @@ if st.session_state.orter_data:
             st.markdown("**Metod:** Vi använder en matematisk optimeringsmodell (Google OR-Tools CP-SAT Solver) för att hitta den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.")
             st.latex(r'''\min \sum_{i=1}^{N} |K_i - \bar{W} \cdot x_i| \quad \text{under bivillkoret} \quad \sum_{i=1}^{N} x_i = C_{\text{total}}''')
             
+            st.markdown("""**Variabler i formeln:**""")
+            st.markdown(r"""
+            *   $K_i$: Det beräknade **kötrycket** för ort $i$ (`nuvarande_prov` × `väntetid`).
+            *   $\bar{W}$: Gruppens **genomsnittliga målvärde-väntetid**, som modellen siktar mot.
+            *   $x_i$: Det **föreslagna antalet prov** för ort $i$ (detta är vad modellen räknar ut).
+            *   $C_{\text{total}}$: Den **totala kapaciteten** som angetts för gruppen.
+            """)
+            
             st.markdown("---")
             col_pro, col_con = st.columns(2)
             with col_pro:
                 st.success("Fördelar 👍")
                 st.markdown("""
-                *   **Optimal kapacitetsanvändning:** Gör absolut det bästa av den totala provkapacitet man redan har.
+                *   **Optimal kapacitetsanvändning:** Gör absolut det bästa av den totala provkapacitet man har.
                 *   **Rättvist & Datadrivet:** Skapar en rättvis fördelning baserad på data, inte magkänsla.
                 *   **Praktiskt genomförbart:** Ger en konkret handlingsplan inom ramen för en given budget/kapacitet.
                 """)
@@ -121,7 +131,7 @@ if st.session_state.orter_data:
                 st.markdown("""
                 *   **Begränsat av totalen:** Om den totala kapaciteten är för låg kommer verktyget bara att "fördela misären jämnt".
                 *   **Reaktivt:** Löser det nuvarande köproblemet, men tar inte hänsyn till framtida efterfrågan.
-                *   **Operationellt krävande:** Kan föreslå stora kapacitetsförflyttningar som kan vara svåra att genomföra i praktiken.
+                *   **Operationellt krävande:** Kan föreslå stora kapacitetsförflyttningar som kan vara svåra att genomföra.
                 """)
 
         # Indata för flik 1
@@ -149,6 +159,14 @@ if st.session_state.orter_data:
             st.markdown("**Syfte:** Att beräkna exakt hur många prov varje ort måste erbjuda per vecka för att nå en specifik målvärde-väntetid.")
             st.markdown("**Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.")
             st.latex(r''' \text{Nödvändig Kapacitet} (x_i) = \lceil \frac{\text{Kötryck} (K_i)}{\text{Målvärde Väntetid} (T)} \rceil ''')
+            
+            st.markdown("""**Variabler i formeln:**""")
+            st.markdown(r"""
+            *   $x_i$: Den **nödvändiga kapaciteten** (antal prov/vecka) för ort $i$.
+            *   $K_i$: Det beräknade **kötrycket** för ort $i$.
+            *   $T$: Den **önskade målvärde-väntetiden** (t.ex. 5 veckor).
+            *   $\lceil \dots \rceil$: Symboliserar att vi avrundar uppåt till närmaste heltal.
+            """)
             
             st.markdown("---")
             col_pro2, col_con2 = st.columns(2)
