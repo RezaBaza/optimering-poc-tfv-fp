@@ -155,7 +155,7 @@ if st.session_state.orter_data:
                     st.subheader("2. Sätt Realistiska Kapacitetsgränser")
                     st.markdown("**Varför?** För att säkerställa att förslagen är **praktiskt genomförbara** på varje kontor. Detta görs genom att lägga till `min_kapacitet` och `max_kapacitet` som nya regler för varje ort.")
                     st.subheader("3. Hantera Olika Provtyper & Kostnader")
-                    st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som 'Vad är det billigaste sättet att nå 4 veckors väntetid?'")
+                    st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som _"Vad är det billigaste sättet att nå 4 veckors väntetid?"_.")
                     st.info("**Teknisk not:** För att hantera kostnader skulle vi byta till en **MIP-solver (Mixed-Integer Programming)**, som är industristandard för denna typ av komplexa ekonomiska optimeringsproblem.")
             else:
                 st.error("Kunde inte hitta en lösning. Kontrollera att den totala kapaciteten är tillräcklig.")
@@ -208,16 +208,16 @@ if st.session_state.orter_data:
                 st.metric(label="Nödvändig total kapacitet", value=f"{totals['needed']:.0f}")
             with col_sum3:
                 st.metric(label="Kapacitetsgap", value=f"{totals['gap']:.0f}", delta=f"{totals['gap']:.0f}")
-            # """
-            # # === NY EXPANDER FÖR NÄSTA STEG (samma som i flik 1) ===
-            # with st.expander("Nästa Steg: Från PoC till Strategiskt Verktyg"):
-            #     st.markdown("""
-            #     Detta verktyg är en kraftfull start, men kan utvecklas vidare för att ge ännu mer värdefulla och precisa rekommendationer. Här är en möjlig roadmap:
-            #     """)
-            #     st.subheader("1. Inför en Efterfrågeprognos")
-            #     st.markdown("**Varför?** För att skapa en **hållbar plan** som förhindrar att nya köer byggs upp. Modellen blir proaktiv istället för reaktiv. Detta görs genom att lägga till en variabel för `prognos_per_vecka`.")
-            #     st.subheader("2. Sätt Realistiska Kapacitetsgränser")
-            #     st.markdown("**Varför?** För att säkerställa att förslagen är **praktiskt genomförbara** på varje kontor. Detta görs genom att lägga till `min_kapacitet` och `max_kapacitet` som nya regler för varje ort.")
-            #     st.subheader("3. Hantera Olika Provtyper & Kostnader")
-            #     st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som 'Vad är det billigaste sättet att nå 4 veckors väntetid?'")
-            #     st.info("**Teknisk not:** För att hantera kostnader skulle vi byta till en **MIP-solver (Mixed-Integer Programming)**, som är industristandard för denna typ av komplexa ekonomiska optimeringsproblem.")"""
+            
+            # === NY EXPANDER FÖR NÄSTA STEG (samma som i flik 1) ===
+            with st.expander("Nästa Steg: Från PoC till Strategiskt Verktyg"):
+                st.markdown("""
+                Detta verktyg är en kraftfull start, men kan utvecklas vidare för att ge ännu mer värdefulla och precisa rekommendationer. Här är en möjlig roadmap:
+                """)
+                st.subheader("1. Inför en Efterfrågeprognos")
+                st.markdown("**Varför?** För att skapa en **hållbar plan** som förhindrar att nya köer byggs upp. Modellen blir proaktiv istället för reaktiv. Detta görs genom att lägga till en variabel för `prognos_per_vecka`.")
+                st.subheader("2. Sätt Realistiska Kapacitetsgränser")
+                st.markdown("**Varför?** För att säkerställa att förslagen är **praktiskt genomförbara** på varje kontor. Detta görs genom att lägga till `min_kapacitet` och `max_kapacitet` som nya regler för varje ort.")
+                st.subheader("3. Hantera Olika Provtyper & Kostnader")
+                st.markdown("**Varför?** För att öka precisionen och möjliggöra **strategisk kostnadsoptimering**. Modellen kan då svara på frågor som _"Vad är det billigaste sättet att nå 4 veckors väntetid?"_.")
+                st.info("**Teknisk not:** För att hantera kostnader skulle vi byta till en **MIP-solver (Mixed-Integer Programming)**, som är industristandard för denna typ av komplexa ekonomiska optimeringsproblem.")
