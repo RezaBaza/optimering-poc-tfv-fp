@@ -1,4 +1,4 @@
-# app.py - VERSION 3.5 MED BALANSERADE FÖR- OCH NACKDELAR
+# app.py - VERSION 3.6 MED FÖRKLARING AV VARIABLER
 
 import streamlit as st
 import pandas as pd
@@ -109,6 +109,15 @@ if st.session_state.orter_data:
             st.markdown("**Metod:** Vi använder en matematisk optimeringsmodell (Google OR-Tools CP-SAT Solver) för att hitta den fördelning som minimerar den totala skillnaden från en genomsnittlig väntetid.")
             st.latex(r'''\min \sum_{i=1}^{N} |K_i - \bar{W} \cdot x_i| \quad \text{under bivillkoret} \quad \sum_{i=1}^{N} x_i = C_{\text{total}}''')
             
+            # === NY DEL: FÖRKLARING AV VARIABLER ===
+            st.markdown("""**Variabler i formeln:**""")
+            st.markdown(r"""
+            *   $K_i$: Det beräknade **kötrycket** för ort $i$ (`nuvarande_prov` × `väntetid`).
+            *   $\bar{W}$: Gruppens **genomsnittliga målvärde-väntetid**, som modellen siktar mot.
+            *   $x_i$: Det **föreslagna antalet prov** för ort $i$ (detta är vad modellen räknar ut).
+            *   $C_{\text{total}}$: Den **totala kapaciteten** som angetts för gruppen.
+            """)
+            
             st.markdown("---")
             col_pro, col_con = st.columns(2)
             with col_pro:
@@ -122,8 +131,8 @@ if st.session_state.orter_data:
                 st.warning("Nackdelar ⚠️")
                 st.markdown("""
                 *   **Begränsat av totalen:** Om den totala kapaciteten är för låg kommer verktyget bara att "fördela misären jämnt".
-                *   **Reaktivt:** Löser det nuvarande köproblemet, men tar inte hänsyn till framtida efterfrågan (om inte prognos används som indata).
-                *   **Operationellt krävande:** Kan föreslå stora kapacitetsförflyttningar som kan vara svåra att genomföra i praktiken.
+                *   **Reaktivt:** Löser det nuvarande köproblemet, men tar inte hänsyn till framtida efterfrågan.
+                *   **Operationellt krävande:** Kan föreslå stora kapacitetsförflyttningar som kan vara svåra att genomföra.
                 """)
 
         # Indata för flik 1
@@ -152,20 +161,29 @@ if st.session_state.orter_data:
             st.markdown("**Metod:** Detta är en direkt beräkning, inte en optimering. Vi använder den grundläggande formeln för väntetid och löser ut den kapacitet som krävs.")
             st.latex(r''' \text{Nödvändig Kapacitet} (x_i) = \lceil \frac{\text{Kötryck} (K_i)}{\text{Målvärde Väntetid} (T)} \rceil ''')
             
+            # === NY DEL: FÖRKLARING AV VARIABLER ===
+            st.markdown("""**Variabler i formeln:**""")
+            st.markdown(r"""
+            *   $x_i$: Den **nödvändiga kapaciteten** (antal prov/vecka) för ort $i$.
+            *   $K_i$: Det beräknade **kötrycket** för ort $i$.
+            *   $T$: Den **önskade målvärde-väntetiden** (t.ex. 5 veckor).
+            *   $\lceil \dots \rceil$: Symboliserar att vi avrundar uppåt till närmaste heltal, eftersom vi inte kan erbjuda ett halvt prov.
+            """)
+            
             st.markdown("---")
             col_pro2, col_con2 = st.columns(2)
             with col_pro2:
                 st.success("Fördelar 👍")
                 st.markdown("""
-                *   **Strategiskt beslutsunderlag:** Svarar på frågan "Vad krävs för att nå vårt mål?". Perfekt för budget- och resursplanering.
-                *   **Kvantifierar problem:** Synliggör exakt hur stort ett eventuellt kapacitetsgap är i konkreta siffror.
+                *   **Strategiskt beslutsunderlag:** Svarar på frågan "Vad krävs för att nå vårt mål?".
+                *   **Kvantifierar problem:** Synliggör exakt hur stort ett eventuellt kapacitetsgap är.
                 *   **Enkelt & Transparent:** Metoden är mycket enkel att förstå och kommunicera.
                 """)
             with col_con2:
                 st.warning("Nackdelar ⚠️")
                 st.markdown("""
-                *   **Ignorerar begränsningar:** Resultatet tar inte hänsyn till budget, personal eller andra praktiska begränsningar.
-                *   **Känsligt för målvärdet:** Ett orimligt lågt målvärde (t.ex. 1 vecka) kommer att ge ett orimligt högt kapacitetskrav.
+                *   **Ignorerar begränsningar:** Resultatet tar inte hänsyn till budget eller andra praktiska begränsningar.
+                *   **Känsligt för målvärdet:** Ett orimligt lågt målvärde kommer att ge ett orimligt högt kapacitetskrav.
                 *   **Ger inget "hur":** Verktyget säger *vad* som behövs, men inte *hur* man ska uppnå det.
                 """)
 
