@@ -1,4 +1,4 @@
-# app.py - VERSION 3.9 MED ÅTERSTÄLLDA VARIABEL-FÖRKLARINGAR
+# app.py - VERSION 1.1 MED ÅTERSTÄLLDA VARIABEL-FÖRKLARINGAR
 
 import streamlit as st
 import pandas as pd
