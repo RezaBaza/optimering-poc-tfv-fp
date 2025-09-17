@@ -1,4 +1,4 @@
-# app.py - VERSION 3.9 MED ÅTERSTÄLLDA VARIABEL-FÖRKLARINGAR
+# app.py - VERSION 1.1 MED ÅTERSTÄLLDA VARIABEL-FÖRKLARINGAR
 
 import streamlit as st
 import pandas as pd
@@ -8,40 +8,7 @@ import math
 # --- Sidans Konfiguration och Titel ---
 st.set_page_config(layout="wide", page_title="Optimeringsmotor för Körprov")
 
-# --- Bakgrund (färg eller bild) ---
-def set_background(color=None, image_url=None):
-    """Applies a background to the whole Streamlit app. Use either color or image_url."""
-    if image_url:
-        css = f"""
-        <style>
-        .stApp {{
-            background-image: url('{https://trafikia.se/wp-content/uploads/trafikverket.png}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-        }}
-        </style>
-        """
-    elif color:
-        css = f"""
-        <style>
-        .stApp {{
-            background: {color};
-        }}
-        </style>
-        """
-    else:
-        css = """
-        <style>
-        .stApp {
-            background: linear-gradient(135deg, #f0f4ff 0%, #e8fff7 100%);
-        }
-        </style>
-        """
-    st.markdown(css, unsafe_allow_html=True)
 
-# Använd: lämna tomt för standardgradient, eller skicka in image_url eller color
-set_background()
 
 st.title("PoC: Optimeringsmotor för Körprovsplanering")
 
