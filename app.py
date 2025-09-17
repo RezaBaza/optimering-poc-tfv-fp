@@ -12,7 +12,7 @@ st.title("PoC: Optimeringsmotor för Körprovsplanering")
 st.markdown("""
 Detta verktyg innehåller **två olika analysmetoder** för att planera körprovskapacitet:
 
-1.  **Utjämning:** Fördela en befintlig total kapacitet så rättvist som möjligt för att jämna ut väntetiderna mellan orter.
+1.  **Utjämning:** Fördela en befintlig total kapacitet så rättvist som möjligt för att jämna ut väntetiderna mellan orter (Little's Law är grunden för metoden).
 2.  **Målvärdesanalys:** Beräkna exakt hur mycket kapacitet som krävs för att alla orter ska nå ett specifikt väntetidsmål.
 
 Börja med att mata in nuvarande data för de orter som ska ingå i gruppen nedan.
